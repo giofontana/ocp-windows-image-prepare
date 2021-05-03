@@ -30,3 +30,8 @@ Example of use:
 ```shell
 ansible-playbook ocp-win-prepare -e vsphere_server=vcsa.rhbr-lab.com -e vsphere-password=***** -e ssh_pub_key='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1EERwUoWjOgEwQOTuxe9bZ+boCHn4oOy1CeQZB6M9nsNNJtejq20WiPV9Vwj0kVCjx52L9OcfBG7+C2jY0Juq4fMtgsnKy02zLTHb/m4JqkmjIr5o+dD6hpf6mwS31bYOXWjyaHPXHAaTCBfL84sFCC1avlvl2UwWppP25RfEnyLzsNQxlpSWLVTU+LiB3z8dREiGO/o03Vr9qVwNCmJI+SJ4duTSy9FUgzBJ9tTeYCUIYqn8p7l22/IXpOCk3QKWML82bVK8X1oDoYfgnDbsqBB2KYzJhrB3l1xdibiXhc1yGjg+SRvWB047LufRb+VVt0M5nIq3IDcq1axeh5OgNJOIDAXMSa+/t66e1jXrlf+WA4tQ3Xc3zRuK0nl5PCtzgJ6Zaw3sBWo9T4Kp2i8+ci+n+qPDot6bH3hIDqSdwMoVH/q0RC6y9X6Fq7C4yd6hBA2oGgxvn8P+1JQ26sgrrZ0nNOkhkKl3BN2dTVyqbOj4/IX4hjhWOOdiNwexU2SbZasdfasdfasdfasdfasdfasdfasdf'
 ```
+
+## Notes
+Consider the following notes when trying to use this playbook:
+
+- This playbook has been tested with Red Hat Enterprise Linux 8 and Fedora 33, it may not work with other linux distributions not based on RHEL. If you intent to try it using other distributions and have suggestion to make it more portable, please feel free to propose a PR - I will be happy to analyse and approve it as soon as I can! :)
