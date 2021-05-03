@@ -1,0 +1,65 @@
+{
+   "builders":[
+      {
+         "CPUs":"{{win_vm_cpu}}",
+         "RAM":"{{win_vm_mem}}",
+         "RAM_reserve_all":true,
+         "cluster":"{{vsphere_cluster}}",
+         "communicator":"ssh",
+         "convert_to_template":"true",
+         "datacenter":"{{vsphere_datacenter}}",
+         "datastore":"{{vsphere_datastore}}",
+         "disk_controller_type":"lsilogic-sas",
+         "firmware":"bios",
+         "floppy_files":[
+            "scripts/autounattend.xml",
+            "scripts/install-vm-tools.cmd",
+            "scripts/powershell.ps1",
+            "scripts/authorized_keys",
+            "scripts/win-updates.ps1",
+            "scripts/install-docker.ps1"
+         ],
+         "folder":"{{vsphere_folder}}",
+         "guest_os_type":"windows9Server64Guest",
+         "insecure_connection":"true",
+         "iso_paths":[
+            "{{vcenter_win_iso_path}}",
+            "{{vcenter_vmwaretools_iso_path}}"
+         ],
+         "network_adapters":[
+            {
+               "network":"{{vsphere_network}}",
+               "network_card":"{{vsphere_network_card}}"
+            }
+         ],
+         "password":"{{vsphere_password}}",
+         "storage":[
+            {
+               "disk_size":"{{win_vm_disk}}",
+               "disk_thin_provisioned":true
+            }
+         ],
+         "type":"vsphere-iso",
+         "username":"{{vsphere_user}}",
+         "vcenter_server":"{{vsphere_server}}",
+         "vm_name":"{{win_vm_name}}",
+         "ssh_password":"{{win_admin_passwd}}",
+         "ssh_username":"Administrator",
+         "ssh_timeout":"50m"
+      }
+   ],
+   "provisioners":[
+      {
+	"pause_before": "120s",
+	"inline":["ipconfig"],
+        "type":"powershell",
+	"elevated_user": "Administrator",
+        "elevated_password": "{{win_admin_passwd}}",
+	"max_retries":"10"
+      }
+   ],
+   "sensitive-variables":[
+      "vsphere_password",
+      "winadmin_password"
+   ]
+}

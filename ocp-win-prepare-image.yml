@@ -1,0 +1,71 @@
+---
+- name: Prepare windows image for OpenShift
+  hosts: localhost
+  vars:
+    packer_url: "https://releases.hashicorp.com/packer/1.6.6/packer_1.6.6_linux_amd64.zip"
+
+    vcenter_win_iso_path: "[datastore1] ISOs/WinServer2019.iso"
+    vcenter_vmwaretools_iso_path: "[] /usr/lib/vmware/isoimages/windows.iso"
+    vsphere_cluster: "cluster"
+    vsphere_datacenter: "Datacenter"
+    vsphere_datastore: "datastore1"
+    vsphere_folder: "Plataformas"
+    vsphere_network: "VM Network"
+    vsphere_network_card: "e1000e" #vmxnet3, e1000e, etc.
+    vsphere_server: "vcenter_url"
+    vsphere_user: "Your_username"
+    vsphere_password: "Your_password"    
+
+    win_vm_name: "win-ocp-image-template"
+    win_vm_cpu: "4"
+    win_vm_disk: "128000"
+    win_vm_mem: "16384"
+    win_admin_passwd: "admin123"    
+    ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCcfW4O3CYg0IENfw5QplkHr57b+ntfLiBmyHaXbgQSq4F5Jplz2rQSMYIY/2Ki8EgD4zTsjif5zjiluggLgVc48l5dKLXFYscs+c+hTbQbsu5/4P641HylFADk8ijYs1WXZ+JdTFnTb2B/404+JnusM+MAZ6inHoBseKup4MifBN6TQVb7uCJLrbNluqMeE0qhRcQtHrqqfWiDOvJYVpGjiJG4ZzaIvbBLcuvtCAxg7QnGAQrcOL2gnc6i7WR6g5hJWXNctSpv4XkcKVyMsJIfqmdxZ5AmOlUJ8KkSDN0POo7y27sg6qeuRfb9r+nJlfDjwDRL9fLrUAAvSVtEM4uV"
+
+  tasks:
+
+    - name: "Create scripts dir ..."
+      file: 
+        path: "/tmp/win-image/scripts"
+        state: directory
+        mode: '0755'
+
+    - name: "Generating build.json file ..."
+      template:
+        src: build.json.j2
+        dest: /tmp/win-image/build.json
+
+    - name: "Generating authorized_keys file ..."
+      copy:
+        content: "{{ ssh_pub_key }}"
+        dest: /tmp/win-image/scripts/authorized_keys
+
+    - name: "Generating autounattend.xml file ..."
+      template:
+        src: autounattend.xml.j2
+        dest: /tmp/win-image/scripts/autounattend.xml
+
+    - name: "Copying powershell scripts ..."
+      copy:
+        src: "{{ item }}"
+        dest: "/tmp/win-image/scripts/{{ item }}"
+      loop:
+        - install-docker.ps1
+        - install-vm-tools.cmd
+        - win-updates.ps1        
+        - powershell.ps1
+
+    - name: "Downloading packer ..."
+      get_url: 
+        url: "https://releases.hashicorp.com/packer/1.6.6/packer_1.6.6_linux_amd64.zip"
+        dest: /tmp/win-image/packer.zip
+        mode: '0755' 
+
+    - name: "Unzip packer ..."
+      unarchive:
+        src: /tmp/win-image/packer.zip
+        dest: /tmp/win-image/
+
+    - name: "Running packer"
+      shell: "PACKER_LOG=1 /tmp/win-image/packer -force build.json"
