@@ -25,10 +25,51 @@ You should define the following variables to run it:
 - win_admin_passwd: Password that will be used to set Administrator password at Windows VM (default: "admin123")
 - ssh_pub_key: SSH public key that will be injected into the Windows VM.
 
-Example of use:
+Instructions to use it:
+
+1. Clone this repo into your workspace (it needs to have access to vCenter API URL).
 
 ```shell
-ansible-playbook ocp-win-prepare -e vsphere_server=vcsa.rhbr-lab.com -e vsphere-password=***** -e ssh_pub_key='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1EERwUoWjOgEwQOTuxe9bZ+boCHn4oOy1CeQZB6M9nsNNJtejq20WiPV9Vwj0kVCjx52L9OcfBG7+C2jY0Juq4fMtgsnKy02zLTHb/m4JqkmjIr5o+dD6hpf6mwS31bYOXWjyaHPXHAaTCBfL84sFCC1avlvl2UwWppP25RfEnyLzsNQxlpSWLVTU+LiB3z8dREiGO/o03Vr9qVwNCmJI+SJ4duTSy9FUgzBJ9tTeYCUIYqn8p7l22/IXpOCk3QKWML82bVK8X1oDoYfgnDbsqBB2KYzJhrB3l1xdibiXhc1yGjg+SRvWB047LufRb+VVt0M5nIq3IDcq1axeh5OgNJOIDAXMSa+/t66e1jXrlf+WA4tQ3Xc3zRuK0nl5PCtzgJ6Zaw3sBWo9T4Kp2i8+ci+n+qPDot6bH3hIDqSdwMoVH/q0RC6y9X6Fq7C4yd6hBA2oGgxvn8P+1JQ26sgrrZ0nNOkhkKl3BN2dTVyqbOj4/IX4hjhWOOdiNwexU2SbZasdfasdfasdfasdfasdfasdfasdf'
+$ git clone https://github.com/giofontana/ocp-windows-image-prepare.git
+```
+
+2. Edit the variables according to your environment. You can do that either by editing the `vars` section of `ocp-win-prepare-image.yml` file:
+
+```yaml
+---
+- name: Prepare windows image for OpenShift
+  hosts: localhost
+  vars:
+    packer_url: "https://releases.hashicorp.com/packer/1.6.6/packer_1.6.6_linux_amd64.zip"
+
+    vcenter_win_iso_path: "[datastore1] ISOs/WinServer2019.iso"
+    vcenter_vmwaretools_iso_path: "[] /usr/lib/vmware/isoimages/windows.iso"
+    vsphere_cluster: "cluster"
+    vsphere_datacenter: "Datacenter"
+    vsphere_datastore: "datastore1"
+    vsphere_folder: "Plataformas"
+    vsphere_network: "VM Network"
+    vsphere_network_card: "e1000e" #vmxnet3, e1000e, etc.
+    vsphere_server: "vcenter_url"
+    vsphere_user: "Your_username"
+    vsphere_password: "Your_password"    
+
+    win_vm_name: "win-ocp-image-template"
+    win_vm_cpu: "4"
+    win_vm_disk: "128000"
+    win_vm_mem: "16384"
+    win_admin_passwd: "admin123"    
+    ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCcfW4O3CYg0IENfw5QplkHr57b+ntfLiBmyHaXbgQSq4F5Jplz2rQSMYIY/2Ki8EgD4zTsjif5zjiluggLgVc48l5dKLXFYscs+c+hTbQbsu5/4P641HylFADk8ijYs1WXZ+JdTFnTb2B/404+JnusM+MAZ6inHoBseKup4MifBN6TQVb7uCJLrbNluqMeE0qhRcQtHrqqfWiDOvJYVpGjiJG4ZzaIvbBLcuvtCAxg7QnGAQrcOL2gnc6i7WR6g5hJWXNctSpv4XkcKVyMsJIfqmdxZ5AmOlUJ8KkSDN0POo7y27sg6qeuRfb9r+nJlfDjwDRL9fLrUAAvSVtEM4uV"
+```
+
+Or you may not edit them in the `ocp-win-prepare-image.yml` and define as extra-vars directly at ansible-playbook command. Below you can see an example of the ansible-playbook command
+
+```shell
+# using extra vars
+ansible-playbook ocp-win-prepare -e vcenter_win_iso_path='[datastore1] ISOs/WinServer2019.iso' -e vsphere_cluster='cluster' -e vsphere_datacenter='Datacenter' -e vsphere_datastore='vsphere_datastore' -e vsphere_folder='folder' -e vsphere_server='vcsa.rhbr-lab.com' -e vsphere_user='Administrator@xxx' -e vsphere-password='*****' -e ssh_pub_key='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1EERwUoWjOgEwQOTuxe9bZ+boCHn4oOy1CeQZB6M9nsNNJtejq20WiPV9Vwj0kVCjx52L9OcfBG7+C2jY0Juq4fMtgsnKy02zLTHb/m4JqkmjIr5o+dD6hpf6mwS31bYOXWjyaHPXHAaTCBfL84sFCC1avlvl2UwWppP25RfEnyLzsNQxlpSWLVTU+LiB3z8dREiGO/o03Vr9qVwNCmJI+SJ4duTSy9FUgzBJ9tTeYCUIYqn8p7l22/IXpOCk3QKWML82bVK8X1oDoYfgnDbsqBB2KYzJhrB3l1xdibiXhc1yGjg+SRvWB047LufRb+VVt0M5nIq3IDcq1axeh5OgNJOIDAXMSa+/t66e1jXrlf+WA4tQ3Xc3zRuK0nl5PCtzgJ6Zaw3sBWo9T4Kp2i8+ci+n+qPDot6bH3hIDqSdwMoVH/q0RC6y9X6Fq7C4yd6hBA2oGgxvn8P+1JQ26sgrrZ0nNOkhkKl3BN2dTVyqbOj4/IX4hjhWOOdiNwexU2SbZasdfasdfasdfasdfasdfasdfasdf'
+
+# if you set vars at ocp-win-prepare-image.yml, just run the ansible playbook
+ansible-playbook ocp-win-prepare
 ```
 
 ## Notes

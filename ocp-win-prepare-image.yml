@@ -9,7 +9,7 @@
     vsphere_cluster: "cluster"
     vsphere_datacenter: "Datacenter"
     vsphere_datastore: "datastore1"
-    vsphere_folder: "Plataformas"
+    vsphere_folder: "folder"
     vsphere_network: "VM Network"
     vsphere_network_card: "e1000e" #vmxnet3, e1000e, etc.
     vsphere_server: "vcenter_url"
