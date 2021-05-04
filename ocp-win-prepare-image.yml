@@ -73,13 +73,13 @@
 
     - name: "Running packer ... This may take up to 30 minutes!"
       shell: 
-        cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json >> /tmp/win-image/output-{{ tstamp }}.log"
+        cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json >> /tmp/win-image/output-{{ tstamp.stdout }}.log"
         chdir: /tmp/win-image
       async: 120
       poll: 0
       register: packer_cmd
 
-    - name: "Checking if packer is completed ... Check the file /tmp/win-image/output-{{ tstamp }}.log for more details!"
+    - name: "Checking if packer is completed ... Check the file /tmp/win-image/output-{{ tstamp.stdout }}.log for more details!"
       async_status:
         jid: "{{ packer_cmd.ansible_job_id }}"
       register: job_result
