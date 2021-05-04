@@ -68,7 +68,7 @@
         dest: /tmp/win-image/
 
     - name: Get output log file name
-      shell: "output-$(date +%Y%m%d%H%M%S).log"
+      shell: "echo output-$(date +%Y%m%d%H%M%S).log"
       register: log_file
 
     - name: "Running packer ... This may take up to 30 minutes!"
