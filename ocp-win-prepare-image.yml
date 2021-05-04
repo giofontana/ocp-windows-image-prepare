@@ -71,7 +71,7 @@
       shell: "date +%Y%m%d%H%M%S"
       register: tstamp
 
-    - name: "Running packer ... This may take up to 30 minutes! For more details check the log file: /tmp/win-image/output-{{ tstamp.stdout }}.log 2>&1"
+    - name: "Running packer ... This may take up to 30 minutes! For more details check the log file: /tmp/win-image/output-{{ tstamp.stdout }}.log"
       shell: 
         cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json > /tmp/win-image/output-{{ tstamp.stdout }}.log 2>&1"
         chdir: /tmp/win-image
