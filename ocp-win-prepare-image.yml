@@ -67,19 +67,19 @@
         src: /tmp/win-image/packer.zip
         dest: /tmp/win-image/
 
-    - name: Get output log file name
-      shell: "echo output-$(date +%Y%m%d%H%M%S).log"
-      register: log_file
+    - name: Get timestamp from the system
+      shell: "date +%Y%m%d%H%M%S"
+      register: tstamp
 
     - name: "Running packer ... This may take up to 30 minutes!"
       shell: 
-        cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json >> /tmp/win-image/{{ log_file }}"
+        cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json >> /tmp/win-image/output-{{ tstamp }}.log"
         chdir: /tmp/win-image
       async: 120
       poll: 0
       register: packer_cmd
 
-    - name: "Checking if packer is completed ... Check the file {{ log_file }} for more details!"
+    - name: "Checking if packer is completed ... Check the file /tmp/win-image/output-{{ tstamp }}.log for more details!"
       async_status:
         jid: "{{ packer_cmd.ansible_job_id }}"
       register: job_result
