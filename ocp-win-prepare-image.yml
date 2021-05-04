@@ -67,5 +67,7 @@
         src: /tmp/win-image/packer.zip
         dest: /tmp/win-image/
 
-    - name: "Running packer"
-      shell: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json"
+    - name: "Running packer ... This may take up to 30 minutes!"
+      shell: 
+        cmd: "PACKER_LOG=1 /tmp/win-image/packer build -force build.json"
+        chdir: /tmp/win-image
